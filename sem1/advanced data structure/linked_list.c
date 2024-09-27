@@ -19,6 +19,14 @@ struct node {
 // ? Head pointer
 struct node *head = NULL;
 
+struct inputResult {
+    int isNum; // ? variable to store the status of input type (int or char)
+    int number; // ? variable to hold the input if it is a number
+    char command; // ? variable to hold the input if it is a character
+};
+
+struct inputResult processInput();
+
 // ? function to create a newNode and return its address
 struct node * createNode(int data) {
     struct node *newNode = (struct node *)malloc(sizeof(struct node));
@@ -34,23 +42,40 @@ struct node * createNode(int data) {
 }
 
 //? function to insert a node with position number as the parameter
-void insert(int position) {
+void insert() {
     int value;
     printf("Enter the value to insert: ");
     scanf("%d",&value);
 
     struct node *newNode = createNode(value);
 
+    struct inputResult res = processInput();
+    /*// ? if the input is integer, parse it and return as the position number;
+    if(isNum) {
+        int num;
+        sscanf(input,"%d",&num);
+        printf("the input [ %d ] is a number",num);
+    }
+    // ? if the input is character, return either ;
+    else if(strlen(input) == 1){
+        char ch = input[0];
+        printf("the input [ %c ] is a character",ch);
+    }
+    // ? if the input is integer, parse it and return as the position number;
+    else {
+        printf("the input [ %s ] is a string",input);
+    }*/
+
     //* beginning
-    if(position == 0) {
+    if(res.command == 'b') {
         newNode->data = value;
         newNode->next = head;
         head = newNode;
 
-        printf("%d was added to the list\n",newNode->data);
+        printf("%d was added to the list beginning\n",newNode->data);
     }
     //* end
-    else if(position == 1) {
+    else if(res.command == 'e') {
         newNode->data = value;
         newNode->next = NULL;
         //? if the list is empty
@@ -68,10 +93,13 @@ void insert(int position) {
             current->next = newNode;
             newNode->next = NULL;   
         }
+        printf("%d was added to the list end\n",newNode->data);
     }
     //* insert at specific position
-    else {
+    else if(res.number) {
         printf("NOT YET IMPLEMENTED!\n");
+    } else {
+        printf("Enter a valid option!\n");
     }
 }
 
@@ -98,7 +126,7 @@ int main() {
         scanf("%d",&choice);      
         
         switch(choice){
-            case 1: printf("Enter preference : "); scanf("%d",&pref); insert(pref); break;
+            case 1: insert(); break;
             case 2: printf("deletion\n"); break;
             case 3: displayList(); break;
             case 4: printf("details\n"); break;
@@ -108,37 +136,33 @@ int main() {
     } while(choice !=0);
 }
 
-// ! ---------------------------------Unused Code below---------------------------------
-
 // ? this function is intended to use with insertion and deletion
-/*void processInput() {
+struct inputResult processInput() {
     char input[10];
-    printf("Enter your preferred position number or a specific position: 'b' - beginning, 'e' - end");
+
+    struct inputResult res;
+
+    printf("Enter your preferred position number or a specific position: 'b' - beginning, 'e' - end: ");
     scanf("%s",input);
 
-    isNum = 1; // ? assume the input to be integer
+    res.isNum = 1; // ? assume the input to be integer
 
-    // ? This loops checks if every character is an integer, if any of the character or element is not a digit, then isNum is set to 0, indicating its not a number
-    for(int i=0; i<strlen(input); i++){
-        if(!isdigit(input[i])) {
-            isNum = 0;
-            break;
+    if(input[0] == 'b' || input[0] == 'e') {
+        res.isNum = 0; // * Not a number
+        res.command = input[0]; // * store the command
+    } else {
+        // ? This loops checks if every character is an integer, if any of the character or element is not a digit, then isNum is set to 0, indicating its not a number
+        for(int i=0; i<strlen(input); i++){
+            if(!isdigit(input[i])) {
+                res.isNum = 0;
+                break;
+            }
         }
-    }
 
-    // ? if the input is integer, parse it and return as the position number;
-    if(isNum) {
-        int num;
-        sscanf(input,"%d",&num);
-        printf("the input [ %d ] is a number",num);
-    }
-    // ? if the input is character, return either ;
-    else if(strlen(input) == 1){
-        char ch = input[0];
-        printf("the input [ %c ] is a character",ch);
-    }
-    // ? if the input is integer, parse it and return as the position number;
-    else {
-        printf("the input [ %s ] is a string",input);
-    }
-}*/
+        // ? After the loop check, if the input is a number, cast it to int
+        if(res.isNum == 1) 
+            res.number = atoi(input);
+    } // end of else
+
+    return res;
+}
