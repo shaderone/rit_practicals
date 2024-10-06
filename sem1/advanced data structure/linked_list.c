@@ -50,24 +50,11 @@ void insert() {
     struct node *newNode = createNode(value);
 
     struct inputResult res = processInput();
-    /*// ? if the input is integer, parse it and return as the position number;
-    if(isNum) {
-        int num;
-        sscanf(input,"%d",&num);
-        printf("the input [ %d ] is a number",num);
-    }
-    // ? if the input is character, return either ;
-    else if(strlen(input) == 1){
-        char ch = input[0];
-        printf("the input [ %c ] is a character",ch);
-    }
-    // ? if the input is integer, parse it and return as the position number;
-    else {
-        printf("the input [ %s ] is a string",input);
-    }*/
+
+    printf("res.number = %d, res.command = %c",res.number, res.command);
 
     //* beginning
-    if(res.command == 'b') {
+    if(res.command == 'b' || res.number == 1) {
         newNode->data = value;
         newNode->next = head;
         head = newNode;
@@ -97,9 +84,37 @@ void insert() {
     }
     //* insert at specific position
     else if(res.number) {
-        printf("NOT YET IMPLEMENTED!\n");
+        int index = 0; // ? from head
+
+        struct node *current = head;
+
+        while(current->next != NULL) {
+            printf("Node %d : data = %d\n",index,current->data);
+            
+
+            if(res.number <= 0) {
+                printf("please enter a valid position!\n");
+                insert();
+            } 
+            else if(index == res.number-1) {
+                newNode->next = current->next;
+                current->next = newNode;
+                printf("%d was inserted into the list at position %d\n",newNode->data,index);
+                break;
+            }
+
+            index++;
+            current = current->next;
+        } 
+
+        if(res.number > index) {
+            printf("[NOT WORKING] position is overbound... inserting %d to last position [ %d ]\n", value, index);
+        }
+        
+
     } else {
         printf("Enter a valid option!\n");
+        insert();
     }
 }
 
@@ -122,7 +137,7 @@ int main() {
     int choice;
     int pref;
     do {
-        printf("\033[31mOperations available \033[0m: 1) Insert 2)Delete 3)display 4)details 0) EXIT: ");
+        printf("\n\033[31mOperations available \033[0m: 1) Insert 2)Delete 3)display 4)details 0) EXIT: ");
         scanf("%d",&choice);      
         
         switch(choice){
